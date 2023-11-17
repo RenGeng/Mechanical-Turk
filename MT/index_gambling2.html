@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+	<meta name="author" content="Geng Ren">
+	<title> Guess the character</title>
+	<script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body style="display: flex; flex-direction: column;">
+
+	<div style="border-style: solid; border-color: lightblue; width: 99%;" id="instruction">
+		<h3 style="background-color: lightblue; margin-top: -1px;">
+			Instruction
+		</h3>
+		
+		<p> Your task is to guess one by one which letter <span style="font-weight: bold; color: red;">(26 alphabet letter + space)</span> of the sentence is behind the question mark by assiging percentage on letters.</p>
+
+		<ul>
+			<li> The sentence is in English and it is taken from newspapers</li>
+			<!-- <li> You will begin with a random amount of monney</li> -->
+			<li> You will begin at a random place of the sentence. For example, if the sentence was "HELLO WORLD", you may begin at "HE", or "HELLO", or "HELLO WO", etc...</li>
+			<!-- <li> You have to bet a total of 100% in every gamble</li> -->
+			<li> You have to assign a total of 100% every time</li>
+			<li> The correct letter will be display after you validate your gambling</li>
+			<li> Inputs below letters mean the percentage of your capital you want to bet on that letter, they are 0 by default. For example, if you want to bet 20% of your capital on the letter "M", just type 20 in the input below "M"</li>
+			<!-- <li> Everytime you guessed right, you will win 27 times of your bet amount. For example, if you bet 1$ on the letter "Space", and if it's the right answer, you will get 27$ back</li>
+			<li> If you lost all your capital, you will need to restart the test with another sentence</li>
+			<li style="color: red; font-weight: bold;"> We will compare your achieved capital with other worker, and we will reject all poor result </li> -->
+			<li style="color: red; font-weight: bold;"> We will compare your result with other worker, and we will reject all poor result </li>
+		</ul>
+	</div>
+
+	<br>
+		<button onclick="toggle_example()" id="example_button" style="height: 28px; width: 20%;">Click here to see an example</button>	<br/>
+	<div style="border-style: solid; border-color: lightblue; text-align: center; display: none;" id="example">
+		<h3 style="background-color: lightblue; margin-top: -1px; text-align: left;">
+			Example
+		</h3>
+		
+		<img src="https://drive.google.com/uc?id=10oI7vJ-LFcFjI2qAyMWGxGDKubLPdUW3" atl="beginning of the hit" style="width: 70%; height: 70%;">
+		<p> You will begin with a random sentence like the picture above. </p>
+
+		<img src="https://drive.google.com/uc?id=1KaIn9qjrtwgOKfsK-r4uS_CJcpw7aLDG" alt="betting percentage on somme letters" style="width: 70%; height: 70%;">
+		<p> After thinking what letter can be after the letter "w", you have to assign some percentage on some letters. Here, we assign 40% on letter "H" and "I" because it can be.</p>
+
+		<img src="https://drive.google.com/uc?id=1OEAjtuQ2F9iK6mpi-bHgcYh4rgtlioYj" alt="result after validating" style="width: 70%; height: 70%;">
+		<p> Please validate once you are done.</p>
+	</div>
+
+	<br>
+		<div id="container" class="container" style="display: flex; flex-direction: column; justify-content: center; border: solid; width: 99%; margin-left: auto; margin-right: auto; border-color: tomato;">
+			<h3 style="background-color: tomato; margin-top: -1px;"> Your task</h3>
+			<div style="align-self: center; width: 100%; text-align: center;" id="correct_sentence_block">
+				<p id="correct_sentence" style="font-size: 18px; overflow-wrap: break-word; font-size: 20px;"></p>
+			</div>
+
+			<div style="align-self: center;">
+				<p style="font-weight: bold;" id="fund_message"></p>
+			</div>
+
+			<!-- First line -->
+			<div id="l1" class="line" style="display: flex; flex-direction: row; justify-content: space-around;"> <!-- Change width here -->
+				<div id="A_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >A</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="A" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="B_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >B</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="B" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="C_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >C</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="C" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="D_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >D</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="D" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="E_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >E</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="E" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="F_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >F</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="F" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="G_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >G</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="G" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="H_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >H</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="H" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="I_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >I</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="I" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+			</div>
+
+
+			<!-- Second line -->
+			<div id="l2" class="line" style="display: flex; flex-direction: row; justify-content: space-around;"> <!-- Change width here -->
+				<div id="J_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >J</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="J" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="K_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >K</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="K" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="L_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >L</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="L" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="M_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >M</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="M" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="N_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >N</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="N" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="O_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >O</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="O" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="P_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >P</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="P" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="Q_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >Q</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="Q" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="R_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >R</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="R" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+			</div>
+
+
+
+			<!-- Third line -->
+			<div id="l3" class="line" style="display: flex; flex-direction: row; justify-content: space-around;"> <!-- Change width here -->
+				<div id="S_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >S</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="S" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="T_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >T</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="T" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="U_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >U</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="U" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="V_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >V</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="V" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="W_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >W</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="W" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="X_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >X</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="X" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="Y_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >Y</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="Y" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="Z_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >Z</p>
+					<input type="text" value="0" size="4px" class="input_percent" id="Z" onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+				<div id="Space_bloc" style="display: flex; flex-direction: column; text-align: center;">
+					<p >Space</p>
+					<input type="text" value="0" size="4px" class="input_percent" id=" " onfocusin="this.select();" onfocusout="check_sum(this);" style="margin-top:-12px; text-align:center;">
+				</div>
+			</div>
+
+			<br>
+			<div  style="align-self: center;">
+				<p id="warning_message" style="color: tomato; display: none;"></p>
+			</div>
+
+			
+			<div style="align-self: center;" id="validate_block">
+				<input type="button" value="Validate" onclick="validate();" id="validate">
+			</div>
+
+			<div style="align-self: center; display: none;" id="restart_block">
+				<input type="button" value="Restart" onclick="restart();">
+			</div>
+		</div>
+
+		<div id="form_block">
+			<form action="https://workersandbox.mturk.com/mturk/externalSubmit" id="mturk_form" method="POST" name="mturk_form" onsubmit="return submit_form();" style="text-align: center;">
+			<input id="assignmentId" name="assignmentId" type="hidden" value="" />
+
+			<p id="finish_message" name="finish_message"></p>
+
+			<textarea id="feedback" style="width: 50%; height: 69%; margin-left: auto; margin-right: auto;"></textarea> <br>
+			<input type="input" name="answer" id="answer" style="display: none;">
+			<input type='submit' id='submitButton' value='Submit' style="text-align: center;" />
+			</form>
+		</div>
+
+	<script type="text/javascript">
+		
+		var all_input = document.getElementsByClassName("input_percent");
+		var warning = document.getElementById('warning_message');
+/*		var sentence_array = [replace sentence here];
+		var sentence_index = Math.floor(Math.random() * sentence_array.length);*/
+		// var sentence = sentence_array.splice(sentence_index,1).toString().toUpperCase();
+		var sentence = "replace sentence here".toUpperCase();
+		var correct = document.getElementById('correct_sentence');
+		var lines = document.getElementsByClassName("line");
+		// const start_character_index_array = [replace start character index here]; // Change start character here
+		// var start_character_index = Number(start_character_index_array.splice(sentence_index,1)); // index of the character that is being guessed
+		var start_character_index = replace start character index here;
+		var character_index = start_character_index;
+		correct.innerHTML = sentence.slice(0,character_index) + "?";
+		var error_cpt = 0;
+		var bet_array = "";
+
+		// // Handling worker's capital
+		// const start_fund = [replace start fund here]; // Change start fund here
+		// var fund = Number(start_fund.splice(sentence_index,1));
+		// var capital_array = [];
+		// var fund_message = document.getElementById('fund_message');
+		// fund_message.innerHTML = "Your capital: " + fund + "$";
+
+		var form_block = document.getElementById("form_block");
+		form_block.style.display="none";
+
+		if(turkGetParam('assignmentId')=="ASSIGNMENT_ID_NOT_AVAILABLE")
+		{
+			document.getElementById("validate").disabled=true;
+		}
+
+		/* DEFINE FUNCTION TO EXTRACT PARAMETERS FROM URL */
+		function turkGetParam(name) 
+		{ 
+		  var regexS = "[\?&]"+name+"=([^&#]*)"; 
+		  var regex = new RegExp( regexS ); 
+		  var tmpURL = window.location.href; 
+		  var results = regex.exec( tmpURL ); 
+		  if( results == null ) 
+		  { 
+		    return ""; 
+		  } 
+		  else 
+		  { 
+		    return results[1];    
+		  }
+		} 
+
+		function toggle_example()
+		{
+			var x = document.getElementById('example');
+			if(x.style.display==='none')
+			{
+				x.style.display='block';
+			}
+			else
+			{
+				x.style.display='none';
+			}
+		}
+
+		// checking input if there is something wrong
+		function check_input(element)
+		{
+			if(element.value=='') 
+			{
+				element.value=0;
+				if(element.style.backgroundColor == "tomato" && error_cpt>0)
+				{
+					error_cpt--;
+					element.style.backgroundColor = "";
+				} 
+				element.style.backgroundColor = "";
+				return true;
+			}
+			var test_value = Number(element.value);
+			if(test_value <0 || test_value >100) 
+			{
+				if(element.style.backgroundColor=="") error_cpt++;
+				element.style.backgroundColor = "tomato";
+				warning.style.display = "inline";
+				warning.innerHTML = "Please type only a number between 0 and 100";
+				return false;
+			}
+			else if(!Number.isFinite(test_value))
+			{
+				if(element.style.backgroundColor=="") error_cpt++;
+				element.style.backgroundColor = "tomato";
+				warning.style.display = "inline";
+				warning.innerHTML = "Please type only a number between 0 and 100";
+				return false;
+			}
+			
+			if(error_cpt>0 && element.style.backgroundColor=="tomato") 
+			{
+				error_cpt--;
+				element.style.backgroundColor = "";
+			}
+			if(error_cpt==0)
+			{
+				warning.style.display = "inline";
+				warning.innerHTML="";
+			}
+			return true;
+		}
+
+		function check_sum(element)
+		{
+			if(!check_input(element)) return false;
+
+			var sum = 0;
+			var tmp = 0;
+			var list_index = [];
+			for(var i=0;i<all_input.length;i++)
+			{
+				tmp = Number(all_input[i].value);
+				sum += tmp;
+				if(tmp > 0)
+				{
+					list_index.push(i);
+				}
+				else if (isNaN(tmp) || tmp < 0)
+				{
+					return false;
+				}
+				else
+				{
+					all_input[i].style.backgroundColor="";
+				}
+			}
+			if(sum > 100)
+			{
+				for (i of list_index)
+				{
+					all_input[i].style.backgroundColor="red";
+				}
+				warning.style.display = "inline";
+				warning.innerHTML="Your total bet is " + sum + "%, it exeeds 100%, please reduce the amount";
+			}
+			else if(sum < 100)
+			{
+				for (i of list_index)
+				{
+					all_input[i].style.backgroundColor="";
+				}
+				warning.style.display = "inline";
+				warning.innerHTML = "You have bet " + sum + "% of your capital. In order to validate, please bet 100% of your monney on one or more letters";
+			}
+
+			else if(isNaN(sum))
+			{
+				warning.style.display = "inline";
+				warning.innerHTML = "Please type only a number between 0 and 100"
+			}
+			else
+			{
+				for (i of list_index)
+				{
+					all_input[i].style.backgroundColor="";
+				}
+				warning.innerHTML="";
+			}
+		}
+
+		function validate()
+		{
+			if(warning.innerHTML!="" || error_cpt != 0) // If there is a warning message or an error, worker cannot validate
+			{
+				alert("Please solve your error before validate");
+				return; 
+			}
+			else if(warning.style.display =="none")
+			{
+			 	alert("You cannot validate without doing anything!");
+			 	return;
+			}
+			bet_array += sentence[character_index]+",";
+			// var initial_fund = fund;
+			for (i of all_input)
+			{
+				var tmp = Number(i.value);
+				if(tmp!=0)
+				{
+					// bet_array.push(i.id+tmp);
+					bet_array +=i.id+tmp+",";
+				}
+				// bet_amount = tmp/100 * initial_fund;
+				// fund -= bet_amount;
+				// if(i.id == sentence[character_index])
+				// {
+				// 	fund += 27*bet_amount;
+				// }
+				i.value=0;
+			}
+
+			// capital_array.push(fund);
+			bet_array = bet_array.replace(/.$/,"|");
+			warning.style.display = "none";
+			// fund = Number(fund.toFixed(2));
+
+			// if(fund == 0) 
+			// {
+			// 	restart_interface();
+			// 	return;
+			// }
+			character_index++;
+			correct.innerHTML = sentence.slice(0,character_index) + "?";
+			if(character_index > start_character_index+14 || character_index==sentence.length) // every worker guess 15 letters?? 
+			{
+				finish_interface();
+				return;
+			}	
+			// else fund_message.innerHTML = "Your capital: " + fund + "$";
+		}
+
+		// function restart_interface()
+		// {
+		// 	for (i of lines)
+		// 	{
+		// 		i.style.display = "none";
+		// 	}
+		// 	document.getElementById("correct_sentence_block").style.display="none";
+		// 	fund_message.innerHTML="You have lost all your capital. In order to submit your result, you have to restart with a new sentence. Please click on the button below to restart the test.";
+			
+		// 	document.getElementById("validate_block").style.display = "none";
+		// 	document.getElementById("restart_block").style.display = "inherit";
+
+		// }
+
+		// function restart()
+		// {
+		// 	if (sentence_array.length==0)
+		// 	{
+		// 		document.write("Sorry, there is no sentence left for you to guess.");
+		// 		return;
+		// 	}
+		// 	for (i of lines)
+		// 	{
+		// 		i.style.display = "inherit";
+		// 	}
+			
+		// 	sentence_index = Math.floor(Math.random() * sentence_array.length);
+		// 	sentence = sentence_array.splice(sentence_index,1).toString().toUpperCase();
+		// 	document.getElementById("correct_sentence_block").style.display="initial";
+		// 	fund = Number(start_fund.splice(sentence_index,1));
+		// 	fund_message.innerHTML = "Your capital:" + fund +"$";
+		// 	character_index=start_character_index[sentence_index];
+		// 	error_cpt = 0;
+		// 	correct.innerHTML = sentence.slice(0,character_index) + "?";
+		// 	bet_array="";
+		// 	capital_array=[];
+		// 	document.getElementById("validate_block").style.display = "inherit";
+		// 	document.getElementById("restart_block").style.display = "none";
+		// }
+
+		function finish_interface()
+		{
+			form_block.style.display="initial";
+
+			document.getElementById("finish_message").innerHTML = 'Thank you for your work.<br> If you have any feedback, especially about a recommendation, please let us know and don\'t forget to <span style="color: red; line-height: 1px; text-align: center; font-weight: bold;">submit your task</span> by pressing the button below.'
+			document.getElementById("container").style.display = "none";
+			document.getElementById("instruction").style.display = "none";
+			document.getElementById("example_button").style.display = "none";
+
+		}
+
+		/*
+		The answer will be in: 
+		-> the sentence itself
+		-> the character index of the sentence which the worker stops 
+		-> bet that worker make with the letter and the percentage bet on
+		-> feedback
+		*/
+		function submit_form() 
+		{
+			document.getElementById("answer").value =sentence +"&"+character_index+"&"+bet_array+ "&"+document.getElementById("feedback").value;	
+			return turkSetAssignmentID();
+		}
+
+
+	</script>
+
+</body>
+</html>

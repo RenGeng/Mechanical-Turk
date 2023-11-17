@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+	<meta name="author" content="Geng Ren">
+	<title> Guess the character</title>
+	<script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<h2 style="text-align: center;">Guess all the characters in a sentence</h2>
+
+	<div style="border-style: solid; border-color: lightblue;" id="instruction">
+		<h3 style="background-color: lightblue; margin-top: -1px;">
+			Instruction
+		</h3>
+		<p id="explication" style="text-align: justify; visibility: visible;">You will be asked to guess the character in a sentence one by one.</p>
+
+			<ul>
+				<li> The langage is English</li>
+				<li> The sentence is taken from newspaper</li>
+				<li> The HIT will take you around 10 minutes to complete it</li>
+				<li> Type only <span style="color: red; font-weight: bold;">alphabet letter and space</span></li>
+				<li> Upper case and lower case will lead to same result</li>
+				<li> Type only one character at a time</li>
+				<li> Press Enter button to validate your answer. <span style="color: red; font-weight: bold;"> You cannot go back once you validate.</span></li>
+				<li> The color of the input will tell you if you guessed right (green) or wrong (red)</li>
+				<li> You have to guess the right character in order to go to the next one</li>
+				<li> Every time you guessed wrong, we will print the character that you typed, so do not type those characters again</li>
+				<li> Once you guessed all characters, the submit button will appear</li>
+				<li> <span style="color: red;">All our HIT are reviewed by a human</span> </li>
+			</ul>
+	</div>
+	<div style="text-align: center; display: none;" id="block_result">
+		<br/>
+		<table id="result_table" style="border-collapse: collapse; margin-left: auto; margin-right: auto;">
+			<tr id="first_line" style="border:thin solid;">
+				<td><b>Correct answer</b></td>
+			</tr>
+
+			<tr id="second_line" style="border:thin solid;">
+				<td><b>Number of tries</b></td>
+			</tr>
+			</table>
+			<p>If you have any feedback, especially about a recommendation, please let us know and don't forget to <span style="color: red; line-height: 1px; text-align: center; font-weight: bold;">submit your task</span> by pressing the button below.</p>
+	</div>
+	<br>
+	<button onclick="toggle_example()" id="example_button" style="height: 28px;">Click here to see an example</button>	<br/>
+	<div style="border-style: solid; border-color: lightblue; text-align: center; display: none;" id="example">
+		<h3 style="background-color: lightblue; margin-top: -1px; text-align: left;">
+			Example
+		</h3>
+		<iframe src="https://streamable.com/s/mmv8o/jcnsmp" frameborder="0" width="100%" height="100%" allowfullscreen style="width:50%;height:50%;left:0px;top:0px;overflow:hidden;"></iframe>
+	</div>
+	<br/>
+	<!-- HTML to handle creating the HIT form -->
+	<div style="border-style: solid; border-color: OrangeRed; text-align: justify-all; height: 200px; padding-right: 40px;" id="task_block">
+		<h3 style="background-color: OrangeRed; margin-top: -1px; text-align: left; margin-right: -40px;" id="task_label">
+			Your task
+		</h3>
+		<form action="https://workersandbox.mturk.com/mturk/externalSubmit" id="mturk_form" method="POST" name="mturk_form" onsubmit="return submit_form();" style="text-align: center;">
+		<input id="assignmentId" name="assignmentId" type="hidden" value="" />
+		<p id="remaining" name="remaining" style="position: absolute; margin-left: auto; margin-right: auto; left: 0; right: 0; margin-top: -1px;"></p> <br> <br>
+		<p id="correct" name="sentence" style="display: inline; font-size: large; margin-left:53px; margin-top: 25px; text-align: justify-all; word-break: break-all;"></p>
+		<input type="text" id="input" name="input" size=26 value="Enter your first character here" onfocus="this.value=null;">
+		<p id="typed" name="typed" style="margin-bottom: 90px;"></p>
+		<textarea id="feedback" style="display: none; width: 50%; height: 69%; margin-left: auto; margin-right: auto;"></textarea>
+
+		<!-- HTML to handle submitting the HIT -->
+		<input type='submit' id='submitButton' value='Submit' style="visibility: hidden; position: relative;" />
+		</form>
+	</div>
+	
+
+	<script type="text/javascript">
+
+		function submit_form() {
+			input.value = input.value + "&" + document.getElementById("feedback").value;
+			return turkSetAssignmentID();
+		}
+
+		function toggle_example()
+		{
+			var x = document.getElementById('example');
+			if(x.style.display==='none')
+			{
+				x.style.display='block';
+			}
+			else
+			{
+				x.style.display='none';
+			}
+		}
+
+
+		function sum_array(total,num)
+		{
+			return total+num;
+		}
+
+		/* DEFINE FUNCTION TO EXTRACT PARAMETERS FROM URL */
+		function turkGetParam( name ) 
+		{ 
+		  var regexS = "[\?&]"+name+"=([^&#]*)"; 
+		  var regex = new RegExp( regexS ); 
+		  var tmpURL = fullurl; 
+		  var results = regex.exec( tmpURL ); 
+		  if( results == null ) 
+		  { 
+		    return ""; 
+		  } 
+		  else 
+		  { 
+		    return results[1];    
+		  }
+		} 
+
+		$("input").keypress(function(e) 
+		{
+		  //Enter key
+		  if (e.which == 13) {
+		    return false;
+		  }
+		});
+
+		function creat_table()
+		{
+			var table = document.getElementById('result_table');
+			document.getElementById('block_result').style.display='block';
+			var first_line = document.getElementById('first_line');
+			var second_line = document.getElementById('second_line');
+			var td,text;
+			for(var i=0;i<sentence.length;i++)
+			{
+				td=document.createElement("TD");
+				td.style.border="thin solid";
+				text = document.createTextNode(sentence[i]);
+				td.appendChild(text);
+				first_line.appendChild(td);
+
+				td=document.createElement("TD");
+				td.style.border="thin solid";
+				text = document.createTextNode(num_try[i]);
+				td.appendChild(text);
+				second_line.appendChild(td);
+			}
+		}
+
+		var sentence = "replace here".toUpperCase(); // Replace random sentence here
+		var worker_answer=[]; // To stock the characters that worker types for one character in the sentence
+		var worker_answer_list=[]; // To stock all the characters that worker types
+		var remaining = document.getElementById('remaining');
+		remaining.innerHTML = "Characters remaining: " + sentence.length;
+		var character_index = 0; // The index of character which worker are typing
+		var typed=document.getElementById('typed'); // To print characters that are already typed
+		var correct = document.getElementById('correct');
+		var input = document.getElementById('input');
+		var num_try; // Number of tries for each character
+		
+		var regular_expression = new RegExp('[a-zA-Z\\s]');
+		var fullurl = window.location.href;
+		var assignmentId = turkGetParam('assignmentId');
+
+		
+		if (assignmentId=="ASSIGNMENT_ID_NOT_AVAILABLE")
+		{
+			input.disabled=true;
+		}
+		else
+		{
+			input.addEventListener("keydown", function(event)
+		{
+			
+			if (event.keyCode === 13) // Enter button
+			{
+				input.size=2;
+				if(input.value.length!=1) 
+				{
+						alert("Please enter a character at a time.");
+						this.value = null;
+						return;
+				}
+				if(!regular_expression.test(input.value.slice(-1)))
+				{
+					alert("Please enter only alphabet and space.")
+					this.value = null;
+					return;
+				}
+				
+				if(!worker_answer.includes(input.value.slice(-1).toUpperCase()))
+				{
+					worker_answer.push(input.value.slice(-1).toUpperCase());
+
+				}
+
+				if(character_index<=sentence.length-1 && input.value.slice(-1).toUpperCase() == sentence[character_index])
+				{
+					// answer_array.push(number_error);
+					worker_answer_list.push(worker_answer.join(''));
+					worker_answer=[];
+					// number_error=0;
+					input.style.background="lightgreen";
+					setTimeout(function() {input.style.background="white";}, 300);
+					character_index++;
+					correct.innerHTML = sentence.slice(0,character_index);
+					remaining.innerHTML = "Characters remaining: " + (sentence.length - character_index);
+					typed.innerHTML=null;
+				}
+				else
+				{	
+					typed.innerHTML = "Character(s) that have already typed: " + worker_answer;
+					// number_error++;
+					input.style.background="red";
+					setTimeout(function() {input.style.background="white";}, 300);
+				}
+
+				this.value=null;
+
+				if(sentence[character_index] == " " && input.value.slice(-1).toUpperCase()==sentence[character_index]) input.style.marginLeft = "5px";
+				else if(sentence[character_index-1]==" ") input.style.marginLeft = "5px";
+				else input.style.marginLeft = "0px";
+
+				if(character_index==sentence.length) // When worker type all characters
+				{
+					var submit = document.getElementById("submitButton"); 
+					submit.style.visibility="visible";
+					submit.style.display="block";
+					submit.style.marginLeft="auto";
+					submit.style.marginRight="auto";
+					remaining.style.display='none';
+					correct.style.display="none";
+					input.style.display="none";
+					typed.style.display="none";
+					document.getElementById("assignmentId").style.display='none';
+					num_try = worker_answer_list.map(function(num){return num.length});
+					document.getElementById("feedback").style.display='inline';
+					/* The date will be displayed as follow: length of the correct sentence, number of tries for each character, all the characters typed per index */
+					input.value= sentence + "&" + num_try + "&" + worker_answer_list;
+					document.getElementById('task_block').style.border="none";
+					document.getElementById('task_label').style.display="none";
+					document.getElementById('example').style.display="none";
+					document.getElementById('example_button').style.display="none";
+					ending=document.getElementById("instruction");
+					ending.style.border="none";
+					ending.style.textAlign="center";
+					ending.innerHTML="Thank you for your work.<br/>" + "<br/> You tried <b>" + num_try.reduce(sum_array) + "</b> times to complete the sentence (this is just an information, it will not be counted in the approval of the task).";
+					creat_table();
+					return;
+				}
+			}
+
+		}
+
+			)
+		}
+		
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+	<meta name="author" content="Geng Ren">
+	<title> Guess the character</title>
+	<script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<h2 style="text-align: center;">Guess all the characters in a sentence</h2>
+
+	<div style="border-style: solid; border-color: lightblue;" id="instruction">
+		<h3 style="background-color: lightblue; margin-top: -1px;">
+			Instruction
+		</h3>
+		<p id="explication" style="text-align: justify; visibility: visible;">You will be asked to guess the character in a sentence one by one.</p>
+
+			<ul>
+				<li> The language is English</li>
+				<li> The sentence is taken from newspaper</li>
+				<li> The HIT will take you around 5 minutes to complete it</li>
+				<li> Type only <span style="color: red; font-weight: bold;">alphabet letter and space</span></li>
+				<li> Upper case and lower case will lead to the same result</li>
+				<li> Type only one character at a time</li>
+				<li> Press Enter button to validate your answer. <span style="color: red; font-weight: bold;"> You cannot go back once you validate.</span></li>
+				<li> The color of the input will tell you if you guessed right (green) or wrong (red)</li>
+				<li> Every time you validate, the right character will be printed</li>
+				<li> Once you guessed all characters, the submit button will appear</li>
+				<li> <span style="color: red;">All our HIT are reviewed by a human</span> </li>
+			</ul>
+	</div>
+
+	<div style="text-align: center; display: none;" id="block_result">
+		<br/>
+		<table id="result_table" style="border-collapse: collapse; margin-left: auto; margin-right: auto; table-layout: fixed;">
+			<tr id="first_line" style="border:thin solid;">
+				<td><b>Correct answer</b></td>
+			</tr>
+
+			<tr id="second_line" style="border:thin solid;">
+				<td><b>Your guess</b></td>
+			</tr>
+			</table>
+			<p>If you have any feedback, especially about a recommendation, please let us know and don't forget to <span style="color: red; line-height: 1px; text-align: center; font-weight: bold;">submit your task</span> by pressing the button below.</p>
+	</div>
+
+	<br>
+	<button onclick="toggle_example()" id="example_button" style="height: 28px;">Click here to see an example</button>
+	<br/>
+	<div style="border-style: solid; border-color: lightblue; text-align: center; display: none;" id="example">
+		<h3 style="background-color: lightblue; margin-top: -1px; text-align: left;">
+			Example
+		</h3>
+		<iframe src="https://streamable.com/s/qaass/ltebob" frameborder="0" width="100%" height="100%" allowfullscreen style="width:50%;height:50%;left:0px;top:0px;overflow:hidden;"></iframe>
+	</div>
+	<br/>
+	<!-- HTML to handle creating the HIT form -->
+	<div style="border-style: solid; border-color: OrangeRed; text-align: justify-all; height: 200px; padding-right: 40px;" id="task_block">
+		<h3 style="background-color: OrangeRed; margin-top: -1px; text-align: left; margin-right: -40px;" id="task_label">
+			Your task
+		</h3>
+		<form action="https://workersandbox.mturk.com/mturk/externalSubmit" id="mturk_form" method="POST" name="mturk_form" onsubmit="return submit_form();" style="text-align: center;">
+		<input id="assignmentId" name="assignmentId" type="hidden" value="" style="display: none;" />
+		<p id="remaining" name="remaining" style="position: absolute; margin-left: auto; margin-right: auto; left: 0; right: 50px; margin-top: -1px"></p>
+		<br> <br>
+		<p id="correct" name="sentence" style="display: inline; font-size: large; margin-left:53px; margin-top: 25px; text-align: justify; word-break: break-all;"></p> 
+		<input type="text" id="input" name="input" size=26 value="Enter your first character here" onfocus="this.value=null;">
+		<textarea id="feedback" style="display: none; width: 50%; height: 69%; margin-left: auto; margin-right: auto;"></textarea>
+
+		<!-- HTML to handle submitting the HIT -->
+		<input type='submit' id='submitButton' value='Submit' style="visibility: hidden; position: relative;" />
+		</form>
+	</div>
+	
+
+	<script type="text/javascript">
+
+		function submit_form() {
+			input.value = input.value + "&" + document.getElementById("feedback").value;
+			return turkSetAssignmentID();
+		}
+
+		function toggle_example()
+		{
+			var x = document.getElementById('example');
+			if(x.style.display==='none')
+			{
+				x.style.display='block';
+			}
+			else
+			{
+				x.style.display='none';
+			}
+		}
+
+
+		function sum_array(total,num)
+		{
+			return total+num;
+		}
+
+		/* DEFINE FUNCTION TO EXTRACT PARAMETERS FROM URL */
+		function turkGetParam( name ) 
+		{ 
+		  var regexS = "[\?&]"+name+"=([^&#]*)"; 
+		  var regex = new RegExp( regexS ); 
+		  var tmpURL = fullurl; 
+		  var results = regex.exec( tmpURL ); 
+		  if( results == null ) 
+		  { 
+		    return ""; 
+		  } 
+		  else 
+		  { 
+		    return results[1];    
+		  }
+		 } 
+
+		$("input").keypress(function(e) {
+		  //Enter key
+		  if (e.which == 13) {
+		    return false;
+		  }
+		});
+
+		function creat_table()
+		{
+			var table = document.getElementById('result_table');
+			block_result.style.display='inline';
+			var first_line = document.getElementById('first_line');
+			var second_line = document.getElementById('second_line');
+			var td,text;
+			for(var i=0;i<sentence.length;i++)
+			{
+				td=document.createElement("TD");
+				td.style.border="thin solid";
+				if(sentence[i] == " ") text=document.createTextNode("\' \'");
+				else text = document.createTextNode(sentence[i]);
+				td.appendChild(text);
+				first_line.appendChild(td);
+
+				td=document.createElement("TD");
+				td.style.border="thin solid";
+				text = document.createTextNode(worker_answer[i]);
+				td.appendChild(text);
+				second_line.appendChild(td);
+			}
+		}
+
+		var sentence = " have asbestos-related diseases, including three with recently diagnosed cancer.  The total of 18 deaths from malignant mesothelioma, lung cancer and asbestosis was far higher than expected, the researchers said.".toUpperCase(); // Replace random sentence here
+		var worker_answer=[];
+		var remaining = document.getElementById('remaining');
+		remaining.innerHTML = "Characters remaining: " + sentence.length;
+		var character_index = 0; // The index of character which worker are typing
+		var correct = document.getElementById('correct');
+		var input = document.getElementById('input');
+		var error_index=[]; // 0 if worker guesses wrong, 1 if right
+
+		var regular_expression = new RegExp('[a-zA-Z\\s]');
+		var fullurl = window.location.href;
+		var assignmentId = turkGetParam('assignmentId');
+		
+		if (assignmentId=="ASSIGNMENT_ID_NOT_AVAILABLE")
+		{
+			input.disabled=true;
+		}
+		else
+		{
+			input.addEventListener("keydown", function(event)
+		{
+			
+			if (event.keyCode === 13) // Enter button
+			{
+				input.size=2;
+				if(input.value.length!=1) 
+				{
+					alert("Please enter a character at a time");
+					this.value = null;
+					return;
+				}
+				if(!regular_expression.test(input.value.slice(-1)))
+				{
+					alert("Please enter only alphabet and space.")
+					this.value = null;
+					return;
+				}
+				if(character_index<=sentence.length-1 && input.value.slice(-1).toUpperCase() == sentence[character_index])
+				{
+					error_index.push(1);
+					input.style.background="lightgreen";
+					setTimeout(function() {input.style.background="white";}, 300);
+				}
+				else
+				{	
+					error_index.push(0);
+					input.style.background="red";
+					setTimeout(function() {input.style.background="white";}, 300);
+				}
+
+				if(sentence[character_index] == " ")
+				{
+					input.style.marginLeft = "5px";
+				}
+				else
+				{
+					input.style.marginLeft = "0px";
+				}
+				worker_answer.push(input.value.slice(-1).toUpperCase());
+				character_index++;
+				correct.innerHTML = sentence.slice(0,character_index);
+
+				remaining.innerHTML = "Characters remaining: " + (sentence.length - character_index);
+				this.value=null;
+
+				if(character_index==sentence.length) // When worker type all characters
+				{	
+					var submit = document.getElementById("submitButton"); 
+					submit.style.visibility="visible";
+					submit.style.display="block";
+					submit.style.marginLeft="auto";
+					submit.style.marginRight="auto";
+					remaining.style.display='none';
+					correct.style.display="none";
+					input.style.display="none";
+					document.getElementById("assignmentId").style.display='none';
+					document.getElementById("feedback").style.display='inline';
+					/* The data will be displayed as follow: the correct sentence, right or wrong guess, sentence that worker typed*/
+					input.value=sentence + "&" +error_index.join('') + "&" + worker_answer.join('');
+					document.getElementById('task_block').style.border="none";
+					document.getElementById('task_label').style.display="none";
+					document.getElementById('example').style.display="none";
+					document.getElementById('example_button').style.display="none";
+					ending=document.getElementById("instruction");
+					ending.style.border="none";
+					ending.style.textAlign="center";
+					ending.innerHTML="Thank you for your work."+"<br/> You guessed <b>" + error_index.reduce(sum_array) + "</b> character(s) out of " + sentence.length +" (this is just an information, it will not be counted in the approval of the task). Here is your result.";
+					creat_table();
+					return;
+				}
+			}
+
+		}
+
+			)
+		}
+		
+	</script>
+
+</body>
+</html>
